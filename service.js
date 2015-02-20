@@ -5,7 +5,9 @@ app.service('FirebaseService', function($http, $q) {
 	this.getPosts = function(data) {
 
 		return $http.get('https://devmtn.firebaseio.com/posts.json').then(function(result) {
-			posts = result.data;
+			var results = result.data;
+
+			return results;
 		})
 	}
 
@@ -28,13 +30,19 @@ app.service('FirebaseService', function($http, $q) {
 	      s4() + '-' + s4() + s4() + s4();
 	}
 
-	this.vote = function(postId, direction) {
+	this.vote = function(postId, direction, karma) {
 		if(direction === 'up') {
-	      post.karma++;
+	      karma++;
 	    } else if(direction === 'down'){
-	      post.karma--;
+	      karma--;
 	    }
 
-	    return $http.patch('https://devmtn.firebaseio.com/posts/' + postId + '.json', post)
+	    return $http({
+	    		method: 'PATCH',
+	    		url: 'https://devmtn.firebaseio.com/posts/' + postId + '.json',
+	    		data: {karma: karma}
+	    	}).then(function(res) {
+	    		//console.log('karma res', res);
+	    	});
 	}
 });

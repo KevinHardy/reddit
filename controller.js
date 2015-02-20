@@ -4,9 +4,11 @@ app.controller('PostsController', function($scope, FirebaseService) {
 
 	//$scope.test = "This is Kevin's reddit app!";
 
-	FirebaseService.getPosts().then(function() {
-		$scope.posts = posts;
-	})
+	$scope.getPosts = function() {
+		FirebaseService.getPosts().then(function(posts) {
+			$scope.posts = posts;
+		})
+	}
 
 	$scope.addPost = function() {
 		FirebaseService.addPost($scope.newPost).then(function() {
@@ -15,10 +17,20 @@ app.controller('PostsController', function($scope, FirebaseService) {
 	}
 
 	$scope.vote = function(postId, direction) {
-		FirebaseService.vote(postId, direction);
-		FirebaseService.getPosts();
+		// console.log($scope.posts[postId]);
+		FirebaseService.vote(postId, direction, $scope.posts[postId].karma).then(function() {
+			$scope.getPosts();
+		})
 	}
 
-	// $scope.newPost = "hello";
+	$scope.submitComment = function(id, comment) {
+		var commentObj = {};
+		commentObj.text = comment;
+		commentObj.timestamp = Date.now();
+		FirebaseService.addComment(id, commentObj).then(function(data) {
+			$scope.getPosts();
+		})
+
+	$scope.getPosts();	
 
 });
